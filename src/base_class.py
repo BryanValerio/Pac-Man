@@ -29,7 +29,7 @@ class Base:
         self.playing_update()
         self.playing_draw()
       else:
-        self.running = Fa;se
+        self.running = False
       self.clock.tick(FPS)
     pygame.quit()
     sys.exit()
@@ -50,7 +50,7 @@ class Base:
   # size, etc. 
 
   def load(self):
-
+    
 
 
   def intro_events(self):
