@@ -14,6 +14,9 @@ class Base:
     self.running = True
     self.state = 'intro'
   # initiates the game
+    self.cell_width = width//28
+    self.cell_height = height//30
+
     self.load()
 
 
@@ -50,8 +53,14 @@ class Base:
   # size, etc. 
 
   def load(self):
-    
+    self.background = pygame.image.load('src/maze.png')
+    self.background = pygame.transform.scale(self.background, (width, height))
 
+  def draw_grid(self):
+    for x in range(width//self.cell_width):
+      pygame.draw.line(self.screen, (107, 107, 107), (x*self.cell_width, 0), (x*self.cell_width, height))
+    for x in range(height//self.cell_height):
+      pygame.draw.line(self.screen, (107, 107, 107), (), ())
 
   def intro_events(self):
     for event in pygame.event.get():
@@ -86,5 +95,6 @@ class Base:
     pass
 
   def playing_draw(self):
-    self.screen.fill((0, 0, 0))
+    self.screen.blit(self.background, (0, 0))
+    self.draw_grid()
     pygame.display.update()
