@@ -1,4 +1,4 @@
-width, height = 448, 596
+width, height = 560, 620
 start_text_size = 16
 start_font = 'arialblack'
 # settings for the screen
