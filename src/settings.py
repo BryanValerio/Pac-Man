@@ -9,5 +9,5 @@ FPS = 60
 # settings for the screen
 
 
-player_start_position = vec(1, 1)
+# player_start_position = vec(0)
 #settings for the player
