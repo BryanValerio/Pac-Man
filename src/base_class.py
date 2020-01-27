@@ -17,11 +17,13 @@ class Base:
   # initiates the game
     self.cell_width = maze_width//28
     self.cell_height = maze_height//30
-    self.player = player(self, player_start_position)
+    self.p_position = None
     self.walls = []
     self.coins = []
 
     self.load()
+
+    self.player = player(self, self.p_position)
 
 
 
@@ -75,6 +77,8 @@ class Base:
             elif char == 'C':
             # for the coins that pac man collects
               self.coins.append(vec(xidx, yidx))
+            elif char == 'P':
+              self.p_postion = vec(xidx, yidx)
 
 
   def draw_grid(self):
@@ -84,8 +88,8 @@ class Base:
       pygame.draw.line(self.background, (107, 107, 107), (0, x*self.cell_height), (width, x*self.cell_height))
     # drawing lines in order to match up the path with the maze background
 
-    for coin in self.coins:
-      pygame.draw.rect(self.background, (0, 0,0), (coin.x*self.cell_width, coin.y*self.cell_height, self.cell_width, self.cell_height))
+    # for coin in self.coins:
+      # pygame.draw.rect(self.background, (165, 178, 42), (coin.x*self.cell_width, coin.y*self.cell_height, self.cell_width, self.cell_height))
 
 
   def intro_events(self):
@@ -132,10 +136,19 @@ class Base:
   def playing_draw(self):
     self.screen.fill(0, 0, 0)
     self.screen.blit(self.background, (top_bottom_space//2, top_bottom_space//2))
+    self.draw_coins()
+    # to draw the coins on the actual screen instead of the background
     # self.draw_grid()
     # ^^ used to make a grid to ensure that the units move within the maze image/ testing purposes 
+    self.draw_text('CURRENT SCORE: {}'.format(self.player.current_score), self.screen, [60, 0], 18, (255, 255, 255), start_font)
     self.draw_text('HIGH SCORE: 0', self.screen, [width//2, 0], 18, (255, 255, 255), start_font, 
                 )
     self.player.draw()
     pygame.display.update()
-  # to describe the layout of the playing screen with the high school 
+  # to describe the layout of the playing screen with the maze
+  
+
+  def draw_coins(self):
+    for coin in self.coins:
+      pygame.draw.circle(self.screen, (123, 123, 10),
+       (int(coin.x*self.cell_width)+self.cell_width//2+top_bottom_space//2, int(coin.y*self.cell_height)+self.cell_height//2+top_bottom_space//2), 5)
