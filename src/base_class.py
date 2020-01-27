@@ -1,5 +1,6 @@
 import pygame
 import sys
+from player import *
 from settings import *
 
 pygame.init
@@ -16,6 +17,7 @@ class Base:
   # initiates the game
     self.cell_width = maze_width//28
     self.cell_height = maze_height//30
+    self.player = player(self, player_start_position)
 
     self.load()
 
@@ -27,10 +29,12 @@ class Base:
         self.intro_events()
         self.intro_update()
         self.intro_draw()
+      # for when the game is first loaded up
       elif self.state == 'playing':
         self.playing_events()
         self.playing_update()
         self.playing_draw()
+      # for when the actual game is occuring
       else:
         self.running = False
       self.clock.tick(FPS)
@@ -91,9 +95,19 @@ class Base:
     for event in pygame.event.get():
       if event.type == pygame.quit():
         self.running = 'False'
+      if event.type == pygame.keydown:
+        if event.key == pygame.k_left:
+          self.player.move(vec(-1, 0))
+        if event.key == pygame.k_right:
+          self.player.move(vec(1, 0))
+        if event.key == pygame.k_up:
+          self.player.move(vec(0, -1))
+        if event.key == pygame.k_down:
+          self.player.move(vec(0, 1))
+  # the start of when the actual playing begins as well as the movement
 
   def playing_update(self):
-    pass
+    self.player.update()
 
   def playing_draw(self):
     self.screen.fill(0, 0, 0)
@@ -101,4 +115,6 @@ class Base:
     self.draw_grid()
     self.draw_text('HIGH SCORE: 0', self.screen, [width//2, 0], 18, (255, 255, 255), start_font, 
                 )
+    self.player.draw()
     pygame.display.update()
+  # to describe the layout of the playing screen with the high school 
