@@ -9,8 +9,8 @@ class Player:
     """All the functions with define the player, a.k.a Pac-Man, as well as the process of collecting the coins, the location, and where the player can move"""
     def __init__(self, base, position):
         self.base = base
-        self.grid_position = vec(position[0], position[1])
-        self.starting_position = [position.x, position.y]
+        self.starting_position =[position.x, position.y]
+        self.grid_position = position
         self.pix_position = self.get_pix_position()
         # where Pac-Man starts relative to the board
         self.direction = vec(1, 0)
