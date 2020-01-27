@@ -6,6 +6,10 @@ start_text_size = 16
 start_font = 'arialblack'
 top_bottom_space = 50
 FPS = 60
+
+rows= 30
+columns = 28
+
 # settings for the screen
 
 
