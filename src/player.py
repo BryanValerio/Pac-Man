@@ -6,6 +6,7 @@ vec = pygame.math.Vector2
 
 
 class Player:
+    """All the functions with define the player, a.k.a Pac-Man, as well as the process of collecting the coins, the location, and where the player can move"""
     def __init__(self, base, position):
         self.base = base
         self.grid_position = position
@@ -14,6 +15,7 @@ class Player:
         self.direction = vec(1, 0)
         self.stored_direction = None
         self.able_to_move = True
+        self.current_score = 0
 
 
     def get_pix_position(self):
@@ -33,10 +35,25 @@ class Player:
 
         self.grid_position[0] = (self.pix_position[0]-top_bottom_space+self.base.cell_width//2)//self.base.cell_width+1
         self.grid_position[1] = (self.pix_position[1]-top_bottom_space+self.base.cell_height//2)//self.base.cell_height+1
-        # keep track of where the player is currently to the grid      
+        # keep track of where the player is currently to the grid   
+           
+        if self.on_coin():
+            self.eat_coin()
     
 
-    def time_to_move(self, direction):
+    def on_coin(self):
+        if self.grid_position in self.base.coins:
+            return True
+        else:
+            return False
+
+    def eat_coin(self):
+        self.base.coins.remove(self.grid_position)
+        self.current_score += 1
+        
+
+
+    def time_to_move(self):
         if int(self.pix_position.x+top_bottom_space//2) % self.base.cell_width == 0:
             if self.direction == vec(1, 0) or self.direction == vec(-1, 0):
                 return True
@@ -54,7 +71,7 @@ class Player:
     def draw(self):
         pygame.draw.circle(self.base.screen, (190, 190, 15), (int(self.pix_position.x), int(self.pix_position.y)), self.base.cell_width//2-2)
         # the controllable thing
-        
+
         # pygame.draw.rect(self.base.screen, (255, 0, 0), (self.grid_position[0]*self.base.cell_width+top_bottom_space//2, self.grid_position[1]*self.base.cell_height+top_bottom_space//2, self.base.cell_width, self.base.cell_height), 1)
         # ^^ the reactangle keeping track of the player
 
