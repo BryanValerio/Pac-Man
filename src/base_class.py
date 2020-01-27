@@ -1,5 +1,6 @@
 import pygame
 import sys
+import copy
 from player import *
 from enemy import *
 from settings import *
@@ -18,19 +19,19 @@ class Base:
     self.running = True
     self.state = 'intro'
   # initiates the game
-    self.cell_width = maze_width//28
-    self.cell_height = maze_height//30
+    self.cell_width = maze_width//columns
+    self.cell_height = maze_height//rows
     # information on the cells in order to match the grid to the maze image
     self.enemies = []
-    self.e_position = []
-    self.p_position = None
+    self.enemy_position = []
+    self.player_position = None
     # where the player starts
     self.walls = []
     self.coins = []
 
     self.load()
 
-    self.player = player(self, self.p_position)
+    self.player = player(self, copy.copy(self.player_position))
 
     self.make_enemies()
 
@@ -48,6 +49,11 @@ class Base:
         self.playing_update()
         self.playing_draw()
       # for when the actual game is occuring
+      elif self.state == 'game over':
+        self.game_over_events()
+        self.game_over_update()
+        self.game_over_draw()
+      # for when it is a game over
       else:
         self.running = False
       self.clock.tick(FPS)
@@ -57,9 +63,8 @@ class Base:
 
 
 
-  def draw_text(self, letters, screen, position, size, color, font_name, 
-                centered = False):
-                """Says where the text used in the game goes"""
+  def draw_text(self, letters, screen, position, size, color, font_name, centered = False):
+    """Says where the text used in the game goes"""
     font = pygame.font.Sysfont(font_name, size)
     text = font.render(letters, False, color)
     text_size = text.get_size()
@@ -89,16 +94,16 @@ class Base:
               # for the coins that pac man collects
               self.coins.append(vec(xidx, yidx))
             elif char == 'P':
-              self.p_postion = vec(xidx, yidx)
+              self.player_postion = [xidx, yidx]
             elif char in ['2', '3', '4', '5']:
-              self.e_position.append(vec(xidx, yidx))
+              self.enemy_position.append(vec(xidx, yidx))
             elif char == 'B':
               pygame.draw.rect(self.background, (0, 0, 0), (xidx*self.cell_width, yidx*self.cell_width, self.cell_width, self.cell_height))
 
 
   def make_enemies(self):
-    for idx, position in enumerate(self.e_position):
-      self.enemies.append(Enemy(self, position, idx))
+    for idx, position in enumerate(self.enemy_position):
+      self.enemies.append(Enemy(self, vec(position), idx))
 
 
   def draw_grid(self):
@@ -111,6 +116,28 @@ class Base:
 
     # for coin in self.coins:
       # pygame.draw.rect(self.background, (165, 178, 42), (coin.x*self.cell_width, coin.y*self.cell_height, self.cell_width, self.cell_height))
+
+
+ def reset(self):
+    self.player.lives = 3
+    self.player.current_score = 0
+    self.player.grid_postition = vec(self.player.starting_position)
+    self.player.pix_position = self.player.get_pix_position()
+    self.player.direction *= 0
+    for enemy in self.enemies:
+        enemy.grid_pos = vec(enemy.starting_position)
+        enemy.pix_position = enemy.get_pix_position()
+        enemy.direction *= 0
+  
+  self.coins = []
+  with open("src/walls.txt", 'r') as file:
+      for yidx, line in enumerate(file):
+          for xidx, char in enumerate(line):
+              if char == 'C':
+                  self.coins.append(vec(xidx, yidx))
+  self.state = "playing"
+
+
 
 
   def intro_events(self):
@@ -158,7 +185,11 @@ class Base:
     """Updates the information on the player and enemies"""
     self.player.update()
     for enemy in self.enemies:
-      self.enemy.update()
+      enemy.update()
+
+    for each enemy in self.enemies:
+      if enemy.grid_postition == self.player.grid_postition:
+        self.remove_life()
 
   def playing_draw(self):
     """Visuals for during the actual game, including a score keeeper"""
@@ -176,10 +207,50 @@ class Base:
       enemy.draw()
     pygame.display.update()
   # to describe the layout of the playing screen with the maze
+
   
+  def remove_life(self):
+    """When the player loses a life and when they reach 0"""
+    self.player.lives -= 1
+    if self.player.lives = 0:
+      self.state == 'game over'
+    else:
+      self.player.grid_postition = vec(self.player_position)
+      self.player.pix_position = self.player.get_pix_position()
+      self.player.direction *= 0
+      for enemy in self.enemies:
+        enemy.grid_postition = vec(enemy.starting_pos)
+        enemy.pix_position = enemy.get_pix_position()
+        enemy.direction *= 0
+      # resets both the player and the enemy when the player loses a life 
+
 
   def draw_coins(self):
     """Where the coins go"""
     for coin in self.coins:
       pygame.draw.circle(self.screen, (123, 123, 10),
        (int(coin.x*self.cell_width)+self.cell_width//2+top_bottom_space//2, int(coin.y*self.cell_height)+self.cell_height//2+top_bottom_space//2), 5)
+
+  def game_over_events(self):
+    """What happens when the player gets a 'game over'"""
+    for event in pygame.event.get():
+      if event.type == pygame.quit:
+        self.running = False
+      if event.type == pygame.keydown and event.key == pygame.k_space:
+        self.reset()
+      if event.type == pygame.keydown and event.key == pygame.k_escape:
+        self.running = False
+
+  def game_over_update(self):
+    pass
+
+  def game_over_draw(self):
+    """The game over screen with different prompts for the player"""
+    self.screen.fill(0, 0, 0)
+    quit_text = "Press the escape button to quit"
+    again_text = "Press SPACEBAR to PLAY AGAIN"
+    self.draw_text("GAME OVER", self.screen, [width//2, 100],  52, (255, 0, 9), "arial", centered=True)
+    self.draw_text(again_text, self.screen, [width//2, height//2],  36, (190, 190, 190), "arial", centered=True)
+    self.draw_text(quit_text, self.screen, [width//2, height//1.5],  36, (190, 190, 190), "arial", centered=True)
+      pygame.display.update()
+
