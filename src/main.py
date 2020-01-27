@@ -1,5 +1,5 @@
 from base_class import *
 
-if name == '__main__':
-    base = App()
+if __name__ == '__main__':
+    app = Base()
     app.run()
