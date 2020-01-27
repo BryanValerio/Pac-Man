@@ -118,7 +118,7 @@ class Base:
       # pygame.draw.rect(self.background, (165, 178, 42), (coin.x*self.cell_width, coin.y*self.cell_height, self.cell_width, self.cell_height))
 
 
- def reset(self):
+  def reset(self):
     self.player.lives = 3
     self.player.current_score = 0
     self.player.grid_postition = vec(self.player.starting_position)
@@ -187,7 +187,7 @@ class Base:
     for enemy in self.enemies:
       enemy.update()
 
-    for each enemy in self.enemies:
+    for enemy in self.enemies:
       if enemy.grid_postition == self.player.grid_postition:
         self.remove_life()
 
@@ -212,7 +212,7 @@ class Base:
   def remove_life(self):
     """When the player loses a life and when they reach 0"""
     self.player.lives -= 1
-    if self.player.lives = 0:
+    if self.player.lives == 0:
       self.state == 'game over'
     else:
       self.player.grid_postition = vec(self.player_position)
@@ -252,5 +252,6 @@ class Base:
     self.draw_text("GAME OVER", self.screen, [width//2, 100],  52, (255, 0, 9), "arial", centered=True)
     self.draw_text(again_text, self.screen, [width//2, height//2],  36, (190, 190, 190), "arial", centered=True)
     self.draw_text(quit_text, self.screen, [width//2, height//1.5],  36, (190, 190, 190), "arial", centered=True)
-      pygame.display.update()
+    
+    pygame.display.update()
 
