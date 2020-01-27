@@ -9,7 +9,7 @@ class Enemy:
     def __init__(self, base, position, number):
         self.base = base
         self.grid_position = position
-        self.starting_position = [pos.x, pos.y]
+        self.starting_position = [position.x, position.y]
         self.pix_position = self.get_pix_position()
         self.radius = int(self.base.cell_width//2.3)
         self.number = number
@@ -43,11 +43,11 @@ class Enemy:
     def time_to_move(self):
         """Determines whether or not the enemy is able to move"""
         if int(self.pix_position.x+top_bottom_space//2) % self.base.cell_width == 0:
-            if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction = vec(0,0):
+            if self.direction == vec(1, 0) or self.direction == vec(-1, 0) or self.direction == vec(0,0):
                 return True
         # for the x-direction
         if int(self.pix_position.y+top_bottom_space//2) % self.base.cell_height == 0:
-            if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction = vec(0, 0):
+            if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0, 0):
                 return True
         return False
         # for the y-direction
@@ -75,7 +75,7 @@ class Enemy:
         ydirection = next_cell[1] - self.grid_position[1]
         return vec(xdirection, ydirection)
 
-    def find_next_cell(self):
+    def find_next_cell(self, target):
         """Find the next cell in order to get closer to the player"""
         path = self.BFS( [int(self.grid_position.x), int(self.grid_position.y)], [int(target[0]), int(target[1])])
             # a Breadth First Search algorithm used which takes a starting point (the enemy's position) and the target (the player)
@@ -113,30 +113,30 @@ class Enemy:
                                 # when using BFS, the y-position goes before the x-position
                                 # if grid != 1, it means it is a wall 
                                     queue.append(next_cell)
-                                    path.append({'Current': current, next_cell, 'Next': next_cell})
+                                    path.append({'Current': current, 'Next': next_cell})
         
         shortest = [target]
         while target != start:
             for step in path:
-                if step["Next"] == target
+                if step["Next"] == target:
                     target = step['Current']
                     shortest.insert(0, step['Current'])
         
         return shortest
 
     def set_target(self):
-        if self.personality == 'speedy' pr self.personality == 'slow':
+        if self.personality == 'speedy' or self.personality == 'slow':
             return self.base.player.grid_position
         # gives the two enemies that target the player the grid position of the player
         else:
         # for the enemy with the 'scared personality trait, who wants to be far away from the player
-            if self.base.player.grid_position.[0] > columns//2 and self.base.player.grid_position.[1] > rows//2:
+            if self.base.player.grid_position[0] > columns//2 and self.base.player.grid_position[1] > rows//2:
                 return vec(1, 1)
             # if the player is in the bottom right, it wants to go to the top left
-            if self.base.player.grid_position.[0] > columns//2 and self.base.player.grid_position.[1] < rows//2:
+            if self.base.player.grid_position[0] > columns//2 and self.base.player.grid_position[1] < rows//2:
                 return vec(1, rows-2)
             # if the target is in the top right, it wants to go to the bottom left 
-            if self.base.player.grid_position.[0] < columns//2 and self.base.player.grid_position.[1] > rows//2:
+            if self.base.player.grid_position[0] < columns//2 and self.base.player.grid_position[1] > rows//2:
                 return vec(columns-2, 1)
             # if the player is on the bottom left, it wants to go to the top right
             else:
@@ -168,7 +168,7 @@ class Enemy:
                 x_direction, y_direction = 0, -1
             # a sequence that generates random numbers and then makes it equal to movement in a certain direction
             next_position = vec(self.grid_position.x + x_direction, self.grid_position.y + y_direction)
-            if next_position not in self.base.walls
+            if next_position not in self.base.walls:
                 break
             # makes sure that the ghost does not phase through walls
         return vec(x_direction, y_direction)
