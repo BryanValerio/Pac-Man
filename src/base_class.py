@@ -1,13 +1,16 @@
 import pygame
 import sys
 from player import *
+from enemy import *
 from settings import *
 
 pygame.init
 vec = pygame.math.Vector2
+# a vector which can be used for 1D motion, 2D motion (x, y), 3D motion (x, y, z)
 
 
 class Base:
+  """This class holds the code for running the actual game with everything coming together"""
   def __init__(self):
     self.screen = pygame.diplay.set_mode((width, height))
     self.clock = pygame.time.Clock()
@@ -17,7 +20,11 @@ class Base:
   # initiates the game
     self.cell_width = maze_width//28
     self.cell_height = maze_height//30
+    # information on the cells in order to match the grid to the maze image
+    self.enemies = []
+    self.e_position = []
     self.p_position = None
+    # where the player starts
     self.walls = []
     self.coins = []
 
@@ -25,9 +32,11 @@ class Base:
 
     self.player = player(self, self.p_position)
 
+    self.make_enemies()
 
 
   def run(self):
+    """Information on the state of the game, whether it is on the start screen or the actual game screen"""
     while self.running:
       if self.state == 'intro':
         self.intro_events()
@@ -50,6 +59,7 @@ class Base:
 
   def draw_text(self, letters, screen, position, size, color, font_name, 
                 centered = False):
+                """Says where the text used in the game goes"""
     font = pygame.font.Sysfont(font_name, size)
     text = font.render(letters, False, color)
     text_size = text.get_size()
@@ -61,6 +71,7 @@ class Base:
   # size, etc. 
 
   def load(self):
+    """Loads in the maze image, the player, the enemies, walls, etc."""
     self.background = pygame.image.load('src/maze.png')
     self.background = pygame.transform.scale(self.background, (maze_width, maze_height))
     # to load in the maze background
@@ -75,13 +86,23 @@ class Base:
               self.walls.append(vec(xidx, yidx))
               # creates a list with the position of the walls
             elif char == 'C':
-            # for the coins that pac man collects
+              # for the coins that pac man collects
               self.coins.append(vec(xidx, yidx))
             elif char == 'P':
               self.p_postion = vec(xidx, yidx)
+            elif char in ['2', '3', '4', '5']:
+              self.e_position.append(vec(xidx, yidx))
+            elif char == 'B':
+              pygame.draw.rect(self.background, (0, 0, 0), (xidx*self.cell_width, yidx*self.cell_width, self.cell_width, self.cell_height))
+
+
+  def make_enemies(self):
+    for idx, position in enumerate(self.e_position):
+      self.enemies.append(Enemy(self, position, idx))
 
 
   def draw_grid(self):
+    """Draws and describes a grid"""
     for x in range(width//self.cell_width):
       pygame.draw.line(self.background, (107, 107, 107), (x*self.cell_width, 0), (x*self.cell_width, height))
     for x in range(height//self.cell_height):
@@ -93,6 +114,7 @@ class Base:
 
 
   def intro_events(self):
+    """What happens at the introduction screen"""
     for event in pygame.event.get():
     # to call the events that have happpened from the time it was last called
       if event.type == pygame.quit():
@@ -105,6 +127,7 @@ class Base:
     pass
 
   def intro_draw(self):
+    """Visuals of the introduction screen"""
     self.screen.fill((0, 0, 0))
     self.draw_text('PUSH SPACEBAR TO START', self.screen, [width//2, height//2], 
                    start_text_size, (165, 130, 55), start_font, centered = True)
@@ -116,6 +139,7 @@ class Base:
 
 
   def playing_events(self):
+    """Controls for the player"""
     for event in pygame.event.get():
       if event.type == pygame.quit():
         self.running = 'False'
@@ -131,9 +155,13 @@ class Base:
   # the start of when the actual playing begins as well as the movement
 
   def playing_update(self):
+    """Updates the information on the player and enemies"""
     self.player.update()
+    for enemy in self.enemies:
+      self.enemy.update()
 
   def playing_draw(self):
+    """Visuals for during the actual game, including a score keeeper"""
     self.screen.fill(0, 0, 0)
     self.screen.blit(self.background, (top_bottom_space//2, top_bottom_space//2))
     self.draw_coins()
@@ -144,11 +172,14 @@ class Base:
     self.draw_text('HIGH SCORE: 0', self.screen, [width//2, 0], 18, (255, 255, 255), start_font, 
                 )
     self.player.draw()
+    for enemy in self.enemies:
+      enemy.draw()
     pygame.display.update()
   # to describe the layout of the playing screen with the maze
   
 
   def draw_coins(self):
+    """Where the coins go"""
     for coin in self.coins:
       pygame.draw.circle(self.screen, (123, 123, 10),
        (int(coin.x*self.cell_width)+self.cell_width//2+top_bottom_space//2, int(coin.y*self.cell_height)+self.cell_height//2+top_bottom_space//2), 5)
