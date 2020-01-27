@@ -2,7 +2,7 @@ import pygame
 import sys
 import copy
 from player import *
-from enemy import *
+from ghost import *
 from settings import *
 
 pygame.init
@@ -13,7 +13,7 @@ vec = pygame.math.Vector2
 class Base:
   """This class holds the code for running the actual game with everything coming together"""
   def __init__(self):
-    self.screen = pygame.diplay.set_mode((width, height))
+    self.screen = pygame.display.set_mode((width, height))
     self.clock = pygame.time.Clock()
     # to control the FPS of the game when it runs 
     self.running = True
@@ -31,7 +31,7 @@ class Base:
 
     self.load()
 
-    self.player = player(self, copy.copy(self.player_position))
+    self.player = Player(self, copy.copy(self.player_position))
 
     self.make_enemies()
 
@@ -77,11 +77,11 @@ class Base:
 
   def load(self):
     """Loads in the maze image, the player, the enemies, walls, etc."""
-    self.background = pygame.image.load('src/maze.png')
+    self.background = pygame.image.load('img/maze.png')
     self.background = pygame.transform.scale(self.background, (maze_width, maze_height))
     # to load in the maze background
 
-    with open('walls.text', 'r') as file:
+    with open('walls.txt', 'r') as file:
     # opens up the file with the information on the walls of the maze
       for yidx, line in enumerate(file):
         # stores the lines as numbers, 1st row is yidx = 0, 2nd row = 1, etc. 
@@ -129,13 +129,14 @@ class Base:
         enemy.pix_position = enemy.get_pix_position()
         enemy.direction *= 0
   
-  self.coins = []
-  with open("src/walls.txt", 'r') as file:
-      for yidx, line in enumerate(file):
-          for xidx, char in enumerate(line):
-              if char == 'C':
-                  self.coins.append(vec(xidx, yidx))
-  self.state = "playing"
+    self.coins = []
+    
+    with open("src/walls.txt", 'r') as file:
+        for yidx, line in enumerate(file):
+            for xidx, char in enumerate(line):
+                if char == 'C':
+                    self.coins.append(vec(xidx, yidx))
+    self.state = "playing"
 
 
 
@@ -219,7 +220,7 @@ class Base:
       self.player.pix_position = self.player.get_pix_position()
       self.player.direction *= 0
       for enemy in self.enemies:
-        enemy.grid_postition = vec(enemy.starting_pos)
+        enemy.grid_postition = vec(enemy.starting_position)
         enemy.pix_position = enemy.get_pix_position()
         enemy.direction *= 0
       # resets both the player and the enemy when the player loses a life 
