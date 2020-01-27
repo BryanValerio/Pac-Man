@@ -14,8 +14,8 @@ class Base:
     self.running = True
     self.state = 'intro'
   # initiates the game
-    self.cell_width = width//28
-    self.cell_height = height//30
+    self.cell_width = maze_width//28
+    self.cell_height = maze_height//30
 
     self.load()
 
@@ -54,13 +54,15 @@ class Base:
 
   def load(self):
     self.background = pygame.image.load('src/maze.png')
-    self.background = pygame.transform.scale(self.background, (width, height))
+    self.background = pygame.transform.scale(self.background, (maze_width, maze_height))
+  # to load in the maze background
 
   def draw_grid(self):
     for x in range(width//self.cell_width):
-      pygame.draw.line(self.screen, (107, 107, 107), (x*self.cell_width, 0), (x*self.cell_width, height))
+      pygame.draw.line(self.background, (107, 107, 107), (x*self.cell_width, 0), (x*self.cell_width, height))
     for x in range(height//self.cell_height):
-      pygame.draw.line(self.screen, (107, 107, 107), (), ())
+      pygame.draw.line(self.background, (107, 107, 107), (0, x*self.cell_height), (width, x*self.cell_height))
+  # drawing lines in order to match up the path with the maze background
 
   def intro_events(self):
     for event in pygame.event.get():
@@ -78,7 +80,7 @@ class Base:
     self.screen.fill((0, 0, 0))
     self.draw_text('PUSH SPACEBAR TO START', self.screen, [width//2, height//2], 
                    start_text_size, (165, 130, 55), start_font, centered = True)
-    self.draw_text('HIGHSCORE', self.screen, [2, 0], 
+    self.draw_text('HIGH SCORE', self.screen, [2, 0], 
                    start_text_size, (255, 255, 255), start_font)
     pygame.display.update()
   # defines the intro screen and how it is set up 
@@ -87,7 +89,6 @@ class Base:
 
   def playing_events(self):
     for event in pygame.event.get():
-    # to call the events that have happpened from the time it was last called
       if event.type == pygame.quit():
         self.running = 'False'
 
@@ -95,6 +96,9 @@ class Base:
     pass
 
   def playing_draw(self):
-    self.screen.blit(self.background, (0, 0))
+    self.screen.fill(0, 0, 0)
+    self.screen.blit(self.background, (top_bottom_space//2, top_bottom_space//2))
     self.draw_grid()
+    self.draw_text('HIGH SCORE: 0', self.screen, [width//2, 0], 18, (255, 255, 255), start_font, 
+                )
     pygame.display.update()
