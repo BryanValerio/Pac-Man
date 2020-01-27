@@ -18,6 +18,7 @@ class Base:
     self.cell_width = maze_width//28
     self.cell_height = maze_height//30
     self.player = player(self, player_start_position)
+    self.walls = []
 
     self.load()
 
@@ -59,7 +60,13 @@ class Base:
   def load(self):
     self.background = pygame.image.load('src/maze.png')
     self.background = pygame.transform.scale(self.background, (maze_width, maze_height))
-  # to load in the maze background
+    # to load in the maze background
+    with open('walls.text', 'r') as file:
+    # opens up the file with the information on the walls of the maze
+      for yidx, line in enumerate(file):
+        # stores the lines as numbers, 1st row is yidx = 0, 2nd row = 1, etc. 
+          for xidx, char in enumerate(line):
+            if char == 1:
 
   def draw_grid(self):
     for x in range(width//self.cell_width):
