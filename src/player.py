@@ -9,8 +9,8 @@ class Player:
     """All the functions with define the player, a.k.a Pac-Man, as well as the process of collecting the coins, the location, and where the player can move"""
     def __init__(self, base, position):
         self.base = base
-        self.grid_position = vec(pos[0], pos[1])
-        self.starting_position = [pos.x, pos.y]
+        self.grid_position = vec(position[0], position[1])
+        self.starting_position = [position.x, position.y]
         self.pix_position = self.get_pix_position()
         # where Pac-Man starts relative to the board
         self.direction = vec(1, 0)
@@ -62,12 +62,12 @@ class Player:
 
     def time_to_move(self):
         """Determines whether or not the player is able to move"""
-        if int(self.pix_position.x+top_bottom_space//2) % self.base.cell_width == 0 or self.direction = vec(0,0):
+        if int(self.pix_position.x+top_bottom_space//2) % self.base.cell_width == 0 or self.direction == vec(0,0):
             if self.direction == vec(1, 0) or self.direction == vec(-1, 0):
                 return True
         # for the x-direction
         if int(self.pix_position.y+top_bottom_space//2) % self.base.cell_height == 0:
-            if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction = vec(0,0):
+            if self.direction == vec(0, 1) or self.direction == vec(0, -1) or self.direction == vec(0,0):
                 return True
         # for the y-direction 
 
@@ -86,8 +86,8 @@ class Player:
         text = font.render(letters, False, color)
         text_size = text.get_size()
         if centered:
-        position[0] = position[0]-text_size[0]//2
-        position[1] = position[1]-text_size[1]//2
+            position[0] = position[0]-text_size[0]//2
+            position[1] = position[1]-text_size[1]//2
         screen.blit(text, position)
     # specific information for the starting text on the intro screen like position
     # size, etc. 
@@ -97,7 +97,7 @@ class Player:
         pygame.draw.circle(self.base.screen, (190, 190, 15), (int(self.pix_position.x), int(self.pix_position.y)), self.base.cell_width//2-2)
         # the controllable thing
 
-        self.draw_text('Lives Left: ', base.self.screen, (30, height - 15), (255, 255, 255), start_font)
+        self.draw_text('Lives Left: ', self.base.screen, (30, height - 15), 18, (255, 255, 255), 'arialblack')
 
         for x in range(self.lives):
             pygame.draw.circle(self.base.screen, (190, 190, 15), (100 + 20*x, height - 15), 7)
