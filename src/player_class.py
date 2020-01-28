@@ -59,7 +59,7 @@ class Player:
                                                             int(self.pix_pos.y)), self.app.cell_width//2-2)
         # Drawing player lives
 
-        self.draw_text('Lives Left: ', self.app.screen, (30, height - 15), 18, (255, 255, 255), 'arialblack')
+        self.draw_text('Lives Left: ', self.app.screen, (30, HEIGHT - 15), 18, (255, 255, 255), 'arialblack')
 
         for x in range(self.lives):
             pygame.draw.circle(self.app.screen, PLAYER_COLOUR, (100 + 20*x, HEIGHT - 15), 7)
