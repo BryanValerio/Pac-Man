@@ -25,6 +25,7 @@ class App:
         # the cells used to line up Pac-Man and the ghosts
         self.walls = []
         self.coins = []
+        self.fruit = []
         self.enemies = []
         self.e_pos = []
         self.p_pos = None
@@ -70,11 +71,11 @@ class App:
 
     def load(self):
         """A function that loads the map, player, enemies, coins, walls"""
-        self.background = pygame.image.load('img/maze.png')
+        self.background = pygame.image.load('src/img/maze.png')
         self.background = pygame.transform.scale(self.background, (MAZE_WIDTH, MAZE_HEIGHT))
         # changing the parameters will allow the background to scale to it 
 
-        with open("walls.txt", 'r') as file:
+        with open("src/walls.txt", 'r') as file:
             # opens the wall.txt file that is a layout of the walls, player, ghosts, and enemies
             for yidx, line in enumerate(file):
                 # changes the columns and rows into values, the 1st row = 0, the 2nd row = 1, and etc.
@@ -92,6 +93,8 @@ class App:
                     elif char == "B":
                         pygame.draw.rect(self.background, BLACK, (xidx*self.cell_width, yidx*self.cell_height,
                                                                   self.cell_width, self.cell_height))
+                    elif char == 'F':
+                        self.fruit.append(vec(xidx, yidx))
 
     def make_enemies(self):
         for idx, pos in enumerate(self.e_pos):
@@ -112,7 +115,7 @@ class App:
         #                                                        coin.y*self.cell_height, self.cell_width, self.cell_height))
 
     def reset(self):
-        """A function that describes the lives that the player has and what happens when they lose one"""
+        """A function that describes how the player and ghost get resetted back"""
         self.player.lives = 3
         self.player.current_score = 0
         self.player.grid_pos = vec(self.player.starting_pos)
@@ -133,6 +136,14 @@ class App:
                         self.coins.append(vec(xidx, yidx))
         self.state = "playing"
 
+        self.fruit = []
+        with open("walls.txt", 'r') as file:
+            for yidx, line in enumerate(file):
+                for xidx, char in enumerate(line):
+                    if char == 'F':
+                        self.fruit.append(vec(xidx, yidx))
+        self.state = "playing"
+
 
 
     def start_events(self):
@@ -151,7 +162,7 @@ class App:
     def start_draw(self):
         """This function details the visuals of the introduction screen"""
         self.screen.fill(BLACK)
-        self.draw_text('PUSH SPACE BAR', self.screen, [
+        self.draw_text('PUSH SPACEBAR TO START', self.screen, [
                        WIDTH//2, HEIGHT//2-50], START_TEXT_SIZE, (170, 132, 58), START_FONT, centered=True)
         self.draw_text('1 PLAYER ONLY', self.screen, [
                        WIDTH//2, HEIGHT//2+50], START_TEXT_SIZE, (44, 167, 198), START_FONT, centered=True)
@@ -193,7 +204,10 @@ class App:
         self.screen.fill(BLACK)
         self.screen.blit(self.background, (TOP_BOTTOM_BUFFER//2, TOP_BOTTOM_BUFFER//2))
         self.draw_coins()
+        self.draw_fruit()
+        # to draw the coins on the actual screen instead of the background
         # self.draw_grid()
+        # ^^ used to make a grid to ensure that the units move within the maze image/ testing purposes 
         self.draw_text('CURRENT SCORE: {}'.format(self.player.current_score),
                        self.screen, [60, 0], 18, WHITE, START_FONT)
         self.draw_text('HIGH SCORE: 0', self.screen, [WIDTH//2+60, 0], 18, WHITE, START_FONT)
@@ -201,8 +215,11 @@ class App:
         for enemy in self.enemies:
             enemy.draw()
         pygame.display.update()
+        # to describe the layout of the playing screen with the maze
+
 
     def remove_life(self):
+        """When the player loses a life and when they reach 0"""
         self.player.lives -= 1
         if self.player.lives == 0:
             self.state = "game over"
@@ -214,16 +231,27 @@ class App:
                 enemy.grid_pos = vec(enemy.starting_pos)
                 enemy.pix_pos = enemy.get_pix_pos()
                 enemy.direction *= 0
+                # resets both the player and the enemy when the player loses a life 
 
     def draw_coins(self):
+        """Where the coins go"""
         for coin in self.coins:
             pygame.draw.circle(self.screen, (124, 123, 7),
                                (int(coin.x*self.cell_width)+self.cell_width//2+TOP_BOTTOM_BUFFER//2,
                                 int(coin.y*self.cell_height)+self.cell_height//2+TOP_BOTTOM_BUFFER//2), 5)
+    
+    def draw_fruit(self):
+        """Where the fruits go"""
+        for fruit in self.fruit:
+            pygame.draw.rect(self.screen, (255, 10, 10),
+                               (int(coin.x*self.cell_width)+self.cell_width//2+TOP_BOTTOM_BUFFER//2,
+                                int(coin.y*self.cell_height)+self.cell_height//2+TOP_BOTTOM_BUFFER//2), 5)
 
-########################### GAME OVER FUNCTIONS ################################
+
+
 
     def game_over_events(self):
+        """What happens when the player gets a 'game over'"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -236,9 +264,10 @@ class App:
         pass
 
     def game_over_draw(self):
+        """This function describes the layout of the 'game over' screen"""
         self.screen.fill(BLACK)
         quit_text = "Press the escape button to QUIT"
-        again_text = "Press SPACE bar to PLAY AGAIN"
+        again_text = "Press SPACEBAR to PLAY AGAIN"
         self.draw_text("GAME OVER", self.screen, [WIDTH//2, 100],  52, RED, "arial", centered=True)
         self.draw_text(again_text, self.screen, [
                        WIDTH//2, HEIGHT//2],  36, (190, 190, 190), "arial", centered=True)
