@@ -71,11 +71,11 @@ class App:
 
     def load(self):
         """A function that loads the map, player, enemies, coins, walls"""
-        self.background = pygame.image.load('src/img/maze.png')
+        self.background = pygame.image.load('img/maze.png')
         self.background = pygame.transform.scale(self.background, (MAZE_WIDTH, MAZE_HEIGHT))
         # changing the parameters will allow the background to scale to it 
 
-        with open("src/walls.txt", 'r') as file:
+        with open("walls.txt", 'r') as file:
             # opens the wall.txt file that is a layout of the walls, player, ghosts, and enemies
             for yidx, line in enumerate(file):
                 # changes the columns and rows into values, the 1st row = 0, the 2nd row = 1, and etc.
@@ -243,9 +243,9 @@ class App:
     def draw_fruit(self):
         """Where the fruits go"""
         for fruit in self.fruit:
-            pygame.draw.rect(self.screen, (255, 10, 10),
-                               (int(coin.x*self.cell_width)+self.cell_width//2+TOP_BOTTOM_BUFFER//2,
-                                int(coin.y*self.cell_height)+self.cell_height//2+TOP_BOTTOM_BUFFER//2), 5)
+            pygame.draw.circle(self.screen, (255, 10, 10),
+                               (int(fruit.x*self.cell_width)+self.cell_width//2+TOP_BOTTOM_BUFFER//2,
+                                int(fruit.y*self.cell_height)+self.cell_height//2+TOP_BOTTOM_BUFFER//2), 9)
 
 
 
